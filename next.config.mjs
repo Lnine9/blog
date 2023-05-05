@@ -85,8 +85,15 @@ const withMDX = nextMDX({
   },
 });
 
-export default withMDX({
-  ...nextConfig,
-  pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-  swcMinify: true,
-});
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default
+  withBundleAnalyzer(
+    withMDX({
+      ...nextConfig,
+      pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+      swcMinify: true,
+    })
+  );

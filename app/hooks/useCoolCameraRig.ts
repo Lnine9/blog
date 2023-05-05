@@ -4,33 +4,33 @@ import { easing } from "maath";
 
 const useCoolCameraRig = (
   ref: React.RefObject<Group>,
-  damp: number,
-  cx: number
+  dampX: number,
+  dampY: number,
+  moveCam?: boolean,
+  cameraPos?: [number, number, number]
 ) => {
   useFrame((state, delta) => {
-    // ref.current?.rotation.set(
-    //   state.pointer.y / damp,
-    //   state.pointer.x / (damp / 2),
-    //   0
-    // );
     easing.damp3(
       // @ts-ignore
       ref.current?.rotation,
-      [state.pointer.y / damp, state.pointer.x / (damp / 2), 0],
+      [state.pointer.y / dampY, state.pointer.x / dampX, 0],
       0.2,
       delta
     );
-    easing.damp3(
-      state.camera.position,
-      [
-        cx + Math.sin(state.pointer.x / 4) * -3,
-        state.pointer.y * 0.3,
-        Math.cos(state.pointer.x / 4) * 5,
-      ],
-      0.5,
-      delta
-    );
-    state.camera.lookAt(0, 0, 0);
+    if (moveCam) {
+      cameraPos = cameraPos || [0, 0, 0];
+      easing.damp3(
+        state.camera.position,
+        [
+          cameraPos[0] + Math.sin(state.pointer.x / 4) * -3,
+          cameraPos[1] + state.pointer.y * 0.3,
+          cameraPos[2] + Math.cos(state.pointer.x / 4) * 5,
+        ],
+        0.5,
+        delta
+      );
+      state.camera.lookAt(0, 0, 0);
+    }
   });
 };
 

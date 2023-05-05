@@ -12,10 +12,9 @@ const SectionWrapper = (Component, idName) =>
         viewport={{ once: true, amount: 0.25 }}
         className={`w-full h-full`}
       >
-        <span className="hash-span" id={idName}>
+        <div className="hash-span h-0" id={idName}>
           &nbsp;
-        </span>
-
+        </div>
         <Component />
       </motion.section>
     );

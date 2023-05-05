@@ -1,19 +1,12 @@
 "use client";
 import glb from "./scene-transformed.glb";
 import * as THREE from "three";
-import React, { useRef } from "react";
+import React, { useImperativeHandle, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
-import {
-  MotionConfig,
-  useInView,
-  useMotionValue,
-  useMotionValueEvent,
-  useTransform,
-  Variants,
-} from "framer-motion";
-import { Canvas } from "@react-three/fiber";
+import { MotionConfig, useAnimationControls, Variants } from "framer-motion";
 import { motion } from "framer-motion-3d";
+import useCoolCameraRig from "@/app/hooks/useCoolCameraRig";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -35,104 +28,93 @@ type GLTFResult = GLTF & {
   };
 };
 
-export default function Model() {
+type Props = JSX.IntrinsicElements["group"];
+
+const groupVar: Variants = {
+  initial: { y: 4.5 },
+  enter: { from: "initial", y: -0.4, rotateZ: 0.1, rotateX: 0.1 },
+};
+
+const var1: Variants = {
+  initial: { rotateY: 5, y: 7 },
+  enter: { rotateY: 0, y: 1.15 },
+};
+const var2: Variants = {
+  initial: { rotateY: 3, y: 5.6 },
+  enter: { rotateY: 0, y: 0.65 },
+};
+const var3: Variants = {
+  initial: { rotateY: 5, y: 3.5 },
+  enter: { rotateY: 0, y: 0.5 },
+};
+const var4: Variants = {
+  initial: { rotateY: 3, y: 2.7 },
+  enter: { rotateY: 0, y: 0.35 },
+};
+const var5: Variants = {
+  initial: { rotateY: 2, y: 0 },
+  enter: { rotateY: 0, y: 0 },
+};
+function Model({ ...rest }: Props, forwardRef) {
   const { nodes, materials } = useGLTF(glb) as GLTFResult;
-  const ref = useRef<HTMLDivElement>(null);
 
-  const inView = useInView(ref, { margin: "-400px 0px -400px 0px" });
+  const ctrl = useAnimationControls();
 
-  const y = useMotionValue<number>(0.4);
+  useImperativeHandle(forwardRef, () => ({
+    enter: async () => {
+      await ctrl.start("enter");
+    },
+    leave: async () => {
+      await ctrl.start("initial");
+    },
+  }));
 
-  useMotionValueEvent(y, "change", (v) => {
-    console.log(v);
-  });
+  const group = useRef<any>(null);
 
-  const groupVar: Variants = {
-    initial: { y: 5 },
-    enter: { y: -0.4, rotateZ: 0.1, rotateX: 0.1 },
-  };
-
-  const var1: Variants = {
-    initial: { rotateY: 5, y: 8 },
-    enter: { rotateY: 0, y: 1.15 },
-  };
-  const var2: Variants = {
-    initial: { rotateY: 3, y: 5.6 },
-    enter: { rotateY: 0, y: 0.65 },
-  };
-  const var3: Variants = {
-    initial: { rotateY: 5, y: 3.5 },
-    enter: { rotateY: 0, y: 0.5 },
-  };
-  const var4: Variants = {
-    initial: { rotateY: 3, y: 2.7 },
-    enter: { rotateY: 0, y: 0.35 },
-  };
-  const var5: Variants = {
-    initial: { rotateY: 2, y: 0 },
-    enter: { rotateY: 0, y: 0 },
-  };
+  useCoolCameraRig(group, 5, 10);
 
   return (
-    <div ref={ref} className="w-full h-full">
-      <Canvas>
-        <directionalLight intensity={0.75} />
-        <ambientLight intensity={0.5} />
-        <spotLight
-          position={[-10, 30, 10]}
-          angle={0}
-          penumbra={1}
-          intensity={0.6}
-          castShadow
-        />
-        <MotionConfig transition={{ type: "spring", duration: 2 }}>
-          <motion.group
-            variants={groupVar}
-            initial="initial"
-            animate={inView ? "enter" : "initial"}
-            dispose={null}
-          >
-            <motion.mesh
-              geometry={nodes.Object_4.geometry}
-              material={materials["Material.004"]}
-              scale={[1.54, 0.48, 1.54]}
-              variants={var1}
-              animate={inView ? "enter" : "initial"}
-            />
-            <motion.mesh
-              geometry={nodes.Object_6.geometry}
-              material={materials["Material.003"]}
-              scale={[1.61, 0.05, 1.61]}
-              variants={var2}
-              animate={inView ? "enter" : "initial"}
-            />
-            <motion.mesh
-              geometry={nodes.Object_8.geometry}
-              material={materials["Material.002"]}
-              scale={[1.52, 0.21, 1.52]}
-              variants={var3}
-              animate={inView ? "enter" : "initial"}
-            />
-            <motion.mesh
-              geometry={nodes.Object_10.geometry}
-              material={materials["Material.001"]}
-              scale={1.45}
-              variants={var4}
-              animate={inView ? "enter" : "initial"}
-            />
-            <motion.mesh
-              geometry={nodes.Object_12.geometry}
-              material={materials["Material.004"]}
-              scale={[1.5, 0.36, 1.5]}
-              rotation={[0, 0, Math.PI]}
-              variants={var5}
-              animate={inView ? "enter" : "initial"}
-            />
-          </motion.group>
-        </MotionConfig>
-      </Canvas>
-    </div>
+    <group ref={group} {...rest} dispose={null}>
+      <MotionConfig transition={{ type: "spring", duration: 1.2 }}>
+        <motion.group variants={groupVar} initial="initial" animate={ctrl}>
+          <motion.mesh
+            castShadow={true}
+            geometry={nodes.Object_4.geometry}
+            material={materials["Material.004"]}
+            scale={[1.54, 0.48, 1.54]}
+            variants={var1}
+          />
+          <motion.mesh
+            geometry={nodes.Object_6.geometry}
+            material={materials["Material.003"]}
+            scale={[1.61, 0.05, 1.61]}
+            variants={var2}
+          />
+          <motion.mesh
+            geometry={nodes.Object_8.geometry}
+            material={materials["Material.002"]}
+            scale={[1.52, 0.21, 1.52]}
+            variants={var3}
+          />
+          <motion.mesh
+            geometry={nodes.Object_10.geometry}
+            material={materials["Material.001"]}
+            scale={1.45}
+            variants={var4}
+          />
+          <motion.mesh
+            geometry={nodes.Object_12.geometry}
+            material={materials["Material.004"]}
+            scale={[1.5, 0.36, 1.5]}
+            rotation={[0, 0, Math.PI]}
+            variants={var5}
+          />
+        </motion.group>
+      </MotionConfig>
+    </group>
   );
 }
+
+export default React.forwardRef(Model);
 
 useGLTF.preload(glb);

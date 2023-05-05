@@ -60,7 +60,7 @@ export default function Model(props: JSX.IntrinsicElements["group"]) {
     anime.play();
   }, []);
 
-  useCoolCameraRig(group, 15, -2);
+  useCoolCameraRig(group, 15, 30, true, [-2, 0, 0]);
 
   return (
     <group ref={group} {...props} dispose={null}>

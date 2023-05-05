@@ -1,9 +1,7 @@
-import Burger from "@/app/components/models/burger/Burger";
 import LaptopSection from "@/app/components/homeSections/LaptopSection";
-import { Suspense } from "react";
-import Loader from "@/app/components/Loader";
 import ClientOnly from "@/app/components/ClientOnly";
 import "./home.css";
+import FavouriteSection from "@/app/components/homeSections/FavouriteSection";
 
 const Home = () => {
   return (
@@ -16,12 +14,7 @@ const Home = () => {
           <LaptopSection />
         </section>
         <section className="h-full">
-          <span className="hash-span" id="burger">
-            &nbsp;
-          </span>
-          <Suspense fallback={<Loader />}>
-            <Burger />
-          </Suspense>
+          <FavouriteSection />
         </section>
         <section className="h-full" />
       </ClientOnly>

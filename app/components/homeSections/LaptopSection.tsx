@@ -4,13 +4,13 @@ import LaptopCanvas from "@/app/components/homeSections/LaptopCanvas";
 import SectionWrapper from "@/app/components/hocs/SectionWrapper";
 import SectionSwitch from "@/app/components/homeSections/SectionSwitch";
 
-const Section = () => {
+const LaptopSection = () => {
   return (
     <div className="w-full h-full relative">
       <div className="w-full h-full hidden md:block">
         <LaptopCanvas />
       </div>
-      <div className="absolute top-12 ml-4 sm:right-36 pointer-events-none flex">
+      <div className="absolute top-12 ml-4 sm:right-40 pointer-events-none flex">
         <div className="w-[2px] h-[300px] bg-black mr-8 my-8 hidden sm:block" />
         <div>
           <p className="text-[5rem]">
@@ -25,9 +25,9 @@ const Section = () => {
           </p>
         </div>
       </div>
-      <SectionSwitch id="#burger" />
+      <SectionSwitch id="#favourite" />
     </div>
   );
 };
 
-export default SectionWrapper(Section, "laptop");
+export default SectionWrapper(LaptopSection, "laptop");
