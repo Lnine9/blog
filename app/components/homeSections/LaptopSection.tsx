@@ -25,7 +25,7 @@ const LaptopSection = () => {
           </p>
         </div>
       </div>
-      <SectionSwitch id="#favourite" />
+      <SectionSwitch id="#skills" />
     </div>
   );
 };

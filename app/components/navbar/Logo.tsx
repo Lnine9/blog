@@ -10,9 +10,9 @@ const Logo = () => {
     <Image
       onClick={() => router.push("/")}
       className="cursor-pointer"
-      src="/next.svg"
-      height="100"
-      width="100"
+      src="/logo.svg"
+      height="60"
+      width="60"
       alt="Logo"
     />
   );

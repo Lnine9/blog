@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import CanvasLoader from "@/app/components/canvas/CanvasLoader";
 import Burger from "@/app/components/models/burger/Burger";
 import { Environment, Plane, SoftShadows, Text } from "@react-three/drei";
@@ -25,6 +25,8 @@ const FavouriteCanvas = ({ index, setLoading }: Props) => {
   const modelsRef = useRef<Array<AnimatedModel>>([]);
 
   const [latest, setLatest] = useState<number>(-1);
+
+  const isMobile = window.matchMedia("(max-width: 768px").matches;
 
   useAsyncEffect(async () => {
     setLoading(true);
@@ -61,7 +63,11 @@ const FavouriteCanvas = ({ index, setLoading }: Props) => {
           position-x={30}
         />
       </Suspense>
-      <LayoutCamera position={[-2, 0, 7]} animate={cameraCtrl} />
+      <LayoutCamera
+        position={[-2, 0.5, isMobile ? 12 : 7]}
+        animate={cameraCtrl}
+        makeDefault
+      />
       <Texts />
 
       <Env />

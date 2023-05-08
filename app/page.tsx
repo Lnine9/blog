@@ -2,6 +2,8 @@ import LaptopSection from "@/app/components/homeSections/LaptopSection";
 import ClientOnly from "@/app/components/ClientOnly";
 import "./home.css";
 import FavouriteSection from "@/app/components/homeSections/FavouriteSection";
+import SkillSection from "@/app/components/homeSections/SkillSection";
+import ExperienceSection from "@/app/components/homeSections/ExperienceSection";
 
 const Home = () => {
   return (
@@ -14,9 +16,14 @@ const Home = () => {
           <LaptopSection />
         </section>
         <section className="h-full">
+          <SkillSection />
+        </section>
+        <section className="h-full">
+          <ExperienceSection />
+        </section>
+        <section className="h-full">
           <FavouriteSection />
         </section>
-        <section className="h-full" />
       </ClientOnly>
     </div>
   );

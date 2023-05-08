@@ -20,6 +20,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.lnine9.icu',
       },
+      {
+        protocol: 'https',
+        hostname: '*',
+      },
     ],
   },
 

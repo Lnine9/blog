@@ -14,6 +14,9 @@ module.exports = {
       height: {
         navh: "60px",
       },
+      gridTemplateRows: {
+        8: "repeat(8, minmax(0, 1fr))",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

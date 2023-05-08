@@ -31,7 +31,7 @@ type GLTFResult = GLTF & {
 type Props = JSX.IntrinsicElements["group"];
 
 const groupVar: Variants = {
-  initial: { y: 4.5 },
+  initial: { y: 8 },
   enter: { from: "initial", y: -0.4, rotateZ: 0.1, rotateX: 0.1 },
 };
 

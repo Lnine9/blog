@@ -42,7 +42,7 @@ const variants: Variants = {
   },
   leave: {
     x: 0,
-    z: 8,
+    z: 14,
     transition: {
       duration: 0.6,
       ease: "easeIn",

@@ -2,8 +2,6 @@ import { Noto_Sans } from "next/font/google";
 
 import Navbar from "@/app/components/navbar/Navbar";
 
-import ToasterProvider from "@/app/components/providers/ToasterProvider";
-
 import "./globals.css";
 import "./prism.css";
 import { Metadata } from "next";
@@ -13,8 +11,9 @@ import Loading from "@/app/loading";
 const font = Noto_Sans({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Next3",
-  description: "next-three-demo",
+  title: "Lnine9",
+  description: "lnine9's blog",
+  icons: ["/LOGO_LIGHT.png"],
 };
 export default async function RootLayout({
   children,
@@ -25,7 +24,6 @@ export default async function RootLayout({
     <html>
       <body className={font.className}>
         <div className="bak hidden md:block" />
-        <ToasterProvider />
         <Navbar />
         <div className="w-full flex justify-center">
           <Suspense fallback={<Loading />}>
