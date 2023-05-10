@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
           items-center
           mx-auto
           w-full
-          max-w-screen-2xl
+          max-w-screen-xl
           space-x-12
           h-navh
           overflow-hidden

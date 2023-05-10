@@ -137,7 +137,7 @@ const SkillSection = () => {
   );
 };
 
-const Item = ({ img, title, desc, type = "front" }: Item) => {
+const Item = ({ img, title, desc, type = "front", link }: Item) => {
   const variants = {
     hidden: {
       opacity: 0,
@@ -154,8 +154,8 @@ const Item = ({ img, title, desc, type = "front" }: Item) => {
   };
 
   return (
-    <motion.div
-      className={`bg-white flex flex-col justify-center items-center relative drop-shadow-xl ${
+    <motion.a
+      className={`bg-white cursor-pointer flex flex-col justify-center items-center relative drop-shadow-xl ${
         type === "back"
           ? "row-span-2 skill-back-skill invisible"
           : "skill-front-skill"
@@ -166,6 +166,9 @@ const Item = ({ img, title, desc, type = "front" }: Item) => {
         transition: { type: "spring" },
       }}
       variants={variants}
+      title={`${desc} click to visit`}
+      href={link}
+      target="_blank"
     >
       <Image
         width={64}
@@ -177,7 +180,7 @@ const Item = ({ img, title, desc, type = "front" }: Item) => {
       <p className="text-sm md:text-lg mt-2 text-neutral-500 font-clash">
         {title}
       </p>
-    </motion.div>
+    </motion.a>
   );
 };
 

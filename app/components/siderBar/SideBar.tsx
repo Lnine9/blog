@@ -18,18 +18,16 @@ const MenuItem: React.FC<MenuItemProps> = ({
     <div
       onClick={onClick}
       className={`
-        px-7
+        px-5
         py-2
         my-2
-        ${active ? "font-bold text-xl" : ""}
+        ${active ? "font-bold" : ""}
         hover:bg-neutral-800
         hover:text-white
         transition-colors
         ease-in-out
         duration-300
         cursor-pointer
-        rounded-lg
-        mx-2
       `}
     >
       {label}

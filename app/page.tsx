@@ -4,11 +4,12 @@ import "./home.css";
 import FavouriteSection from "@/app/components/homeSections/FavouriteSection";
 import SkillSection from "@/app/components/homeSections/SkillSection";
 import ExperienceSection from "@/app/components/homeSections/ExperienceSection";
+import Footer from "@/app/components/Footer";
 
 const Home = () => {
   return (
     <div
-      id="container"
+      id="about-container"
       className="h-[calc(100vh-theme(height.navh))] relative overflow-y-scroll"
     >
       <ClientOnly>
@@ -23,6 +24,9 @@ const Home = () => {
         </section>
         <section className="h-full">
           <FavouriteSection />
+        </section>
+        <section>
+          <Footer />
         </section>
       </ClientOnly>
     </div>

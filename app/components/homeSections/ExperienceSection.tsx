@@ -19,6 +19,7 @@ import useMeasure from "react-use-measure";
 import { throttle } from "@/libs/func";
 import Image from "next/image";
 import useAsyncEffect from "@/app/hooks/utils";
+import { staggerContainer } from "@/libs/motions";
 
 const ExperienceSection = () => {
   const [hoverImg, setHoverImg] = useState<string>("");
@@ -69,10 +70,13 @@ const ExperienceSection = () => {
         <BsFilm />
         My Experience
       </SectionTitle>
-      <div className="max-w-6xl min-w-[1000px] w-2/3 flex">
-        <div
+      <div className="max-w-6xl md:min-w-[1000px] w-3/4 md:w-2/3 flex">
+        <motion.div
           ref={ref}
-          className="flex-1 flex flex-col gap-2 justify-center text-neutral-800 hover:text-neutral-400"
+          variants={staggerContainer(0.1, 0.5)}
+          initial="hidden"
+          whileInView="show"
+          className="flex-1 flex flex-col justify-center text-neutral-800 hover:text-neutral-400"
           onMouseLeave={() => {
             setImgShow(false);
           }}
@@ -81,7 +85,7 @@ const ExperienceSection = () => {
           {experiences.map((item) => (
             <Item key={item.title} {...item} onHover={onHover} />
           ))}
-        </div>
+        </motion.div>
         <MotionImg src={hoverImg} imgShow={imgShow} x={X} y={Y} />
       </div>
     </div>
@@ -96,18 +100,21 @@ const Item = ({
 }: Experience & { onHover: (title) => void }) => {
   return (
     <div
-      className="w-full h-28 border-b border-black z-40
+      className="w-full h-20 md:h-28 border-b border-black z-40
       cursor-pointer flex justify-between items-center relative
       hover:text-neutral-800 hover:h-36 transition-all duration-300 ease-in-out"
       onMouseOver={() => {
         onHover(title);
       }}
+      onClick={() => {
+        onHover(title);
+      }}
     >
       <div>
-        <p className="text-4xl mb-6">{title}</p>
-        <p className="absolute bottom-2 text-lg">{desc}</p>
+        <p className="text-2xl md:text-4xl mb-6">{title}</p>
+        <p className="absolute bottom-2 md:text-lg">{desc}</p>
       </div>
-      <p className="absolute right-4 bottom-2 text-xl text-neutral-500">
+      <p className="absolute right-4 bottom-2 md:text-xl text-neutral-500">
         {date}
       </p>
     </div>
@@ -125,12 +132,18 @@ const MotionImg = ({
   x: MotionValue<number>;
   y: MotionValue<number>;
 }) => {
+  const ref = useRef(null);
+  // useEffect(() => {
+  //   animate(ref.current, { opacity: [0.3, 0.9] }, { duration: 1.2 });
+  // }, [src]);
+
   return (
     <motion.img
+      ref={ref}
       animate={
         imgShow
           ? {
-              opacity: 1,
+              opacity: 0.9,
               scale: 1,
               transition: { duration: 0.5 },
             }

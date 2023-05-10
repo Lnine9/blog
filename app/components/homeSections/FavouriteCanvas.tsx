@@ -121,8 +121,8 @@ const Env = () => {
   return (
     <Suspense>
       <SoftShadows size={7} samples={9} />
-      <Environment preset="sunset" />
-      <ambientLight intensity={0.2} />
+      <Environment files="/venice_sunset_1k.hdr" />
+      <ambientLight intensity={0.08} />
       <directionalLight
         position={[0, 10, 0]}
         castShadow

@@ -1,0 +1,139 @@
+---
+title: 如何批量使用useRef
+description: 如何批量使用useRef
+tags: react
+date: 2023/5/2
+---
+开门见山：
+```jsx
+childs = useRef([]);
+...
+<Child ref={(inst) => {childs.current[index] = inst}} />
+```
+
+在 react 中，父组件调用子组件的方法可以通过 ref 的方式来实现
+```jsx
+const Child = forwardRef(({ info }, ref) => {
+  useImperativeHandle(ref, () => ({
+    log: () => {
+      alert(`child: ${info}`);
+      resolve();
+    },
+  }));
+  return <div ref={ref}>Child</div>;
+});
+
+export default function App() {
+  const childRef = useRef();
+  const onClick = async () => {
+    await childRef.current.log();
+  };
+  return (
+    <div className="App">
+      <Child info="hello" ref={childRef} />
+      <button onClick={onClick}>log</button>
+    </div>
+  );
+}
+```
+上面代码中通过**forwardRef**给子组件传递一个ref，并通过**useImperativeHandle**来向父组件暴露定义好的方法。
+但是如果有多个子组件都需要ref的话代码将会很丑。
+
+```jsx
+const childRef1 = useRef()
+const childRef2 = useRef()
+const childRef3 = useRef()
+...
+```
+我的一个需求是写一个3d模型的轮播图，通过父组件来调用**异步**子组件的enter以及leave时的动画方法，如何批量使用ref成为了一个问题。
+
+搜索无果后在react的useImperativeHandle方法源码中找到一中方式
+
+```ts
+// @type/react/index.d.ts
+interface RefObject<T> {
+  readonly current: T | null;
+}
+// Bivariance hack for consistent unsoundness with RefObject
+// ref可以传递一个回调函数
+type RefCallback<T> = { bivarianceHack(instance: T | null): void }["bivarianceHack"];
+type Ref<T> = RefCallback<T> | RefObject<T> | null;
+
+// react-dom/cjs/react-dom.development.js
+function imperativeHandleEffect(create, ref) {
+  if (typeof ref === 'function') {
+    var refCallback = ref;
+    // 如果ref是函数的话则会线创建ref一个ref的实例，传给回调函数。
+    // create()即是useImperativeHandle的第二个参数
+    var _inst = create();
+
+    refCallback(_inst);
+    return function () {
+      refCallback(null);
+    };
+  } else if (ref !== null && ref !== undefined) {
+    var refObject = ref;
+
+    {
+      if (!refObject.hasOwnProperty('current')) {
+        ...
+      }
+    }
+
+    var _inst2 = create();
+
+    refObject.current = _inst2;
+    return function () {
+      refObject.current = null;
+    };
+  }
+}
+
+```
+具体使用方法如下
+```jsx
+const data = [
+  { info: "我是child0" },
+  { info: "我是child1" },
+  { info: "我是child2" },
+];
+
+export default function App() {
+  // 创建一个数组类型的ref
+  const childsRef = useRef([]);
+
+  const onClick = async () => {
+    await childsRef.current[1].log();
+    await childsRef.current[2].log();
+  };
+
+  return (
+    <div className="App">
+      {data.map((item, index) => (
+        <Child
+          index={index}
+          info={item.info}
+          // 将ref的实例赋值给数组中对应的值
+          ref={(inst) => (childsRef.current[index] = inst)}
+        />
+      ))}
+      <button onClick={onClick}>log</button>
+    </div>
+  );
+}
+
+const Child = forwardRef(({ index, info }, ref) => {
+  useImperativeHandle(ref, () => ({
+    log: () => {
+      // 可以是一个异步函数
+      return new Promise((resolve, _) => {
+        setTimeout(() => {
+          alert(`child${index}: ${info}`);
+          resolve();
+        }, 1000);
+      });
+    },
+  }));
+  return <div ref={ref}>Child{index}</div>;
+});
+```

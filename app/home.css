@@ -1,8 +1,8 @@
-#container {
+#about-container {
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
 }
 
-#container>section {
+#about-container>section {
     scroll-snap-align: center;
 }

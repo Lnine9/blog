@@ -1,0 +1,161 @@
+---
+title: useInView
+description: useInView
+tags: react, IntersectionObserver
+date: 2023/5/4
+---
+
+> IntersectionObserver 接口（从属于 Intersection Observer API）提供了一种异步观察目标元素与其祖先元素或顶级文档视口（viewport）交叉状态的方法。其祖先元素或视口被称为根（root）。
+>
+> --MDN https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver
+
+做网页开发时经常会遇到一个需求，就是判断元素是否出现。比如图片出现时加载、元素出现时播放动画...
+一种方法是使用**getBoundingClientRect**方法
+
+```js
+function isInViewPort(element) {
+  const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+  const viewHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const { top, right, bottom, left } = element.getBoundingClientRect();
+
+  return top >= 0 && left >= 0 && right <= viewWidth && bottom <= viewHeight;
+}
+
+window.addEventListener("scroll", () => {
+  if (isInViewPort(element)) {
+    // ...do something
+  }
+});
+```
+
+不过 scroll 事件会有大量计算，造成资源浪费，引起页面卡顿
+
+## 下面是用 IntersectionObserver 实现的一个 useInView 的 hook
+
+```ts
+import { RefObject, useEffect, useState } from "react";
+
+interface Options {
+  /**
+   * 测试交叉时，用作边界盒的元素或文档。
+   * 如果构造函数未传入 root 或其值为null，则默认使用顶级文档的视口。
+   */
+  root?: RefObject<Element>;
+  /**
+   * 计算交叉时添加到根边界盒 (en-US)的矩形偏移量，可以有效的缩小或扩大根的判定范围从而满足计算需要。
+   * 此属性返回的值可能与调用构造函数时指定的值不同，因此可能需要更改该值，以匹配内部要求。
+   * 所有的偏移量均可用像素（px）或百分比（%）来表达，默认值为 “0px 0px 0px 0px”。
+   * 如果想提前100px触发可以设置bottom为100px,延后则为-100px
+   *
+   * ==========触发离开可视区域
+   *    100px
+   * ----------
+   *
+   *    窗口
+   *
+   * ----------
+   *    100px
+   * ========== 触发进入可视区域
+   */
+  rootMargin?: string;
+  /**
+   * 一个包含阈值的列表，按升序排列，列表中的每个阈值都是监听对象的交叉区域与边界区域的比率。
+   * 当监听对象的任何阈值被越过时，都会生成一个通知。
+   * 如果构造器未传入值，则默认值为 0。
+   * 如果你想要 target 元素在 root 元素的可见程度每多 25%就执行一次回调，那么你可以指定一个数组[0, 0.25, 0.5, 0.75, 1]。
+   */
+  threshold?: number[];
+  // 只出现一次
+  once?: boolean;
+}
+
+export const useInView = (ref, options?: Options) => {
+  const [isInView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current || (options?.once && isInView)) return;
+
+    const _options = {
+      root: (options?.root && options.root.current) || undefined,
+      ...options,
+    };
+
+    return setup(ref.current, setInView, _options);
+  }, [options?.root, ref, options?.rootMargin, options?.once]);
+
+  return isInView;
+};
+
+const setup = (element, setInView, options) => {
+
+  const callback = (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        if (options.once) {
+          observer.unobserve(entry.target);
+        }
+      } else {
+        setInView(false);
+      }
+    });
+  };
+  const observer = new IntersectionObserver(callback, options);
+  observer.observe(element);
+  return () => observer.disconnect();
+};
+```
+
+测试
+
+```tsx
+"use client";
+import React, { useRef } from "react";
+import { useInView } from "@/app/hooks/useInView";
+
+const Demo = () => {
+  const a = useRef<HTMLDivElement>(null);
+  const b = useRef<HTMLDivElement>(null);
+  const container = useRef<HTMLDivElement>(null);
+
+  const isAInView = useInView(a, { rootMargin: "-100px 0px 400px 0px" });
+  const isBInView = useInView(b, { rootMargin: "-400px 0px -400px 0px" });
+  const isContainer = useInView(container);
+
+  return (
+    <div
+      ref={container}
+      className="h-[2000px] flex items-center gap-4 relative"
+    >
+      <div
+        style={{ visibility: isContainer ? "visible" : "hidden" }}
+        className="fixed top-20 left-1/2 w-20 bg-neutral-700 bg-opacity-60 text-white"
+      >
+        <p>{isAInView ? "A is inView" : "A is not inView"}</p>
+        <p>{isBInView ? "B is inView" : "B is not inView"}</p>
+      </div>
+      <div
+        ref={a}
+        className="w-[200px] h-[200px] bg-emerald-500
+         flex justify-center items-center text-3xl"
+      >
+        A
+      </div>
+      <div
+        ref={b}
+        className="w-[200px] h-[200px] bg-rose-500
+         flex justify-center items-center text-3xl"
+      >
+        B
+      </div>
+    </div>
+  );
+};
+
+export default Demo;
+```
+
+向下滑动 👇
+
+<UseInViewDemo />

@@ -37,7 +37,7 @@ const FavouriteSection = () => {
   return (
     <div className="w-full h-full relative" ref={ref}>
       <div className="absolute left-1/2 top-12 translate-x-[-50%]">
-        <SectionTitle>
+        <SectionTitle className="min-w-[18rem]">
           <BsFillHeartFill className="text-rose-600 text-3xl" />
           My Favourites
         </SectionTitle>
