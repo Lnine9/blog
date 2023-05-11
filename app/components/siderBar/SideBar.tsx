@@ -20,15 +20,18 @@ const MenuItem: React.FC<MenuItemProps> = ({
       className={`
         px-5
         py-2
-        my-2
-        ${active ? "font-bold" : ""}
-        hover:bg-neutral-800
-        hover:text-white
+        my-1
+        text-neutral-700
+        hover:bg-neutral-200
         transition-colors
         ease-in-out
+        rounded-lg
         duration-300
         cursor-pointer
+        truncate
+        ${active ? "bg-neutral-200" : ""}
       `}
+      title={label}
     >
       {label}
     </div>
@@ -58,6 +61,7 @@ const SideBar = ({ paths }: SideBarProps) => {
       md:flex
       flex-col
       w-60
+      px-4
       py-4
       top-[calc(theme(height.navh))]
       h-[calc(100vh-theme(height.navh))]
@@ -66,6 +70,12 @@ const SideBar = ({ paths }: SideBarProps) => {
       z-10
       "
     >
+      <div
+        className="bg-neutral-900 text-white text-xl
+      flex justify-center rounded-lg w-full mx-auto mb-4 py-2"
+      >
+        POSTS
+      </div>
       {paths.map((item) => (
         <MenuItem
           key={item.slug}

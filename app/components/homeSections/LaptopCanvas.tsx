@@ -12,7 +12,7 @@ const Scene = () => {
       <pointLight position={[10, 10, 10]} intensity={1} castShadow={true} />
       <Suspense fallback={<CanvasLoader />}>
         <Laptop position={[-2, 0, 0]} />
-        <Environment preset="warehouse" />
+        <Environment files="/empty_warehouse_01_1k.hdr" />
       </Suspense>
       <ContactShadows
         position={[0, -1, 0]}

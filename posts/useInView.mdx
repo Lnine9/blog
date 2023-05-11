@@ -1,7 +1,7 @@
 ---
 title: useInView
 description: useInView
-tags: react, IntersectionObserver
+tags: react|IntersectionObserver
 date: 2023/5/4
 ---
 
@@ -119,8 +119,12 @@ const Demo = () => {
   const b = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null);
 
-  const isAInView = useInView(a, { rootMargin: "-100px 0px 400px 0px" });
-  const isBInView = useInView(b, { rootMargin: "-400px 0px -400px 0px" });
+  const isAInView = useInView(a, {
+    rootMargin: "-200px 0px 200px 0px",
+  });
+  const isBInView = useInView(b, {
+    rootMargin: "-400px 0px -400px 0px",
+  });
   const isContainer = useInView(container);
 
   return (

@@ -1,8 +1,8 @@
 import React from "react";
-import Empty from "@/app/components/Empty";
+import EmptyState from "@/app/components/EmptyState";
 
 const NotFound = () => {
-  return <Empty />;
+  return <EmptyState title="404" subtitle="There is nothing!" />;
 };
 
 export default NotFound;

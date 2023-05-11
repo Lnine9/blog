@@ -32,7 +32,7 @@ export function _getPost(filePath: string): Post {
 const compareDate = (str1?: string, str2?: string) => {
   const date1 = new Date(str1 || "1970/01/01");
   const date2 = new Date(str2 || "1970/01/01");
-  return date1 > date2 ? 1 : -1;
+  return date1 > date2 ? -1 : 1;
 };
 
 export function getAllPost(): Post[] {

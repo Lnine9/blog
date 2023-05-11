@@ -178,11 +178,11 @@ export default function Layout({children}) {
 }
 ```
 
-## Why Suspense
+## Suspense的好处
 
 1、路由懒加载
 
-2、对ssr的**流式加载（Streaming）**很有用
+2、对ssr的**流式加载**很有用
 
 目前react18版本中，开发者的一项重点工作就是对RSC（React Server Component）的实现，但是官方文档目前对于RSC的描述为还在实验中。不过在next.js中已经可以很好的使用了。
 
@@ -190,7 +190,7 @@ export default function Layout({children}) {
 
 #### 什么是流式加载？ [Routing: Loading UI and Streaming | Next.js (nextjs.org)](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#what-is-streaming)
 
-要了解流式处理在 React 和 Next.js 中的工作原理，了解**服务器端渲染 （SSR）** 及其限制会很有帮助。
+要了解流式加载在 React 和 Next.js 中的工作原理，了解**服务器端渲染 （SSR）** 及其限制会很有帮助。
 
 使用 SSR，在用户可以查看页面并与之交互之前，需要完成一系列步骤：
 
@@ -204,13 +204,11 @@ export default function Layout({children}) {
 
 这些步骤是顺序和阻塞的，这意味着服务器只能在获取所有数据后呈现页面的 HTML。而且，在客户端上，React 只有在下载了页面中所有组件的代码后才能对 UI 进行水合。
 
-带有 React 和 Next 的 SSR.js通过尽快向用户显示非交互式页面来帮助提高感知的加载性能。
 
 ![Server Rendering without Streaming](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-without-streaming.png&w=3840&q=75)
 
-但是，它仍然可能很慢，因为服务器上的所有数据获取都需要在向用户显示页面之前完成。
 
-**流式处理**允许您将页面的 HTML 分解为较小的块，并逐步将这些块从服务器发送到客户端。
+**流式加载**可以页面的 HTML 分解为较小的块，并逐步将这些块从服务器发送到客户端。
 
 ![How Server Rendering with Streaming Works](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-with-streaming.png&w=3840&q=75)
 
@@ -218,4 +216,4 @@ export default function Layout({children}) {
 
 ![Chart showing Server Rendering with Streaming](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-with-streaming-chart.png&w=3840&q=75)
 
-流式处理可以很有效的建设首屏渲染时间
+流式加载可以很有效的建设首屏渲染时间

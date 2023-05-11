@@ -17,6 +17,7 @@ pre[class*="language-"] {
     -moz-hyphens: none;
     -ms-hyphens: none;
     hyphens: none;
+    box-shadow: inset #282a36 0px 0px 20px;
 }
 
 /* Code blocks */
