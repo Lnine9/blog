@@ -26,11 +26,9 @@ export default async function RootLayout({
         <div className="bak hidden md:block" />
         <Navbar />
         <div className="w-full flex flex-col justify-center">
-          <Suspense fallback={<Loading />}>
-            <div className="w-full min-h-[calc(100vh-theme(height.navh))]">
-              {children}
-            </div>
-          </Suspense>
+          <div className="w-full min-h-[calc(100vh-theme(height.navh))]">
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </div>
         </div>
       </body>
     </html>

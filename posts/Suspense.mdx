@@ -1,0 +1,221 @@
+---
+title : Suspense与async component
+description : Suspense与async component
+tags : js|react|nextjs
+date : 2023/5/8
+---
+
+## 什么是Suspense
+
+目前版本的react中，Suspense一般配合 lazy 使用。当有一些组件需要动态加载（例如路由）时可以利用 lazy 方法来完成。
+
+```jsx
+const Home = lazy(() => import("./Home"));
+const About = lazy(() => import("./About"));
+...
+    <Suspense fallback={<p>loading...</p>}>
+	<Routes>
+        <Route path="/about" element={<About />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+</Suspense>
+```
+
+使用lazy动态导入的组件，在webpack打包时会进行拆分，当用户切换到对应路由时才会加载对应文件，在未加载完成之前，react并不知道组件的内容，会显示白屏，给用户带来不好的体验。Sucpense可以接收一个fallback参数，用于在加载时显示。
+
+## Suspense实现原理
+
+可以先从lazy的源码来看
+
+```typescript
+export function lazy<T>(
+  ctor: () => Thenable<{default: T, ...}>,
+): LazyComponent<T, Payload<T>> {
+  const payload: Payload<T> = {
+    // We use these fields to store the result.
+    _status: Uninitialized,
+    _result: ctor,
+  };
+
+  const lazyType: LazyComponent<T, Payload<T>> = {
+    $$typeof: REACT_LAZY_TYPE,
+    _payload: payload,
+    _init: lazyInitializer,
+  };
+  ...
+}
+
+
+function lazyInitializer(payload) {
+    if (payload._status === Uninitialized) {
+      var ctor = payload._result;
+      // 调用ctor（）函数，得到一个加载组件的promise
+      var thenable = ctor(); // Transition to the next state.
+	  
+      // 加载完毕后的回调
+      thenable.then(function (moduleObject) {
+        if (payload._status === Pending || payload._status === Uninitialized) {
+          // Transition to the next state.
+          var resolved = payload;
+          resolved._status = Resolved;
+          resolved._result = moduleObject;
+        }
+      }, function (error) {
+        if (payload._status === Pending || payload._status === Uninitialized) {
+          var rejected = payload;
+          rejected._status = Rejected;
+          rejected._result = error;
+        }
+      });
+
+      if (payload._status === Uninitialized) {
+        var pending = payload;
+        pending._status = Pending;
+        pending._result = thenable;
+      }
+    }
+
+    if (payload._status === Resolved) {
+      ...
+      // 返回加载完的组件
+      return moduleObject.default;
+    } else {
+      // throw 一个promise
+      throw payload._result;
+    }
+  }
+```
+
+方法简化后如下
+
+```typescript
+function lazy(payload) {
+    const promise = payload.ctor()
+    promise.then(
+    	obj => {
+            // 加载完成 
+            payload._result = moduleObject
+        },
+        err => {
+            // 加载失败
+        }
+    )
+    if (加载完成) {
+        return payload._result.default // (返回组件)
+    } else {
+        throw promise
+    }
+}
+```
+
+由此可推断Suspense大致流程为
+
+第一次调用子组件，捕获到抛出的内容，如果是一个promise，则展示fallback，同时设置promise的回调，当promise执行完后再次调用，返回子组件。
+
+### 使用Suspense进行数据加载
+
+```jsx
+function createReader(promise) {
+    let status = 'uninitialized'
+    let data = undefined
+    return () => {
+        switch(status) {
+            case "uninitialized": {
+                promise.then(res => {
+                    status = "resolved"
+                    data = res
+                })
+                throw promise
+            }
+            case "pending": throw promise;
+            case "resolved": return data;
+            default: break;
+        }
+    }
+}
+
+const reader = createrReader(fetchData)
+
+const Child = () => {
+    const data = reader()
+    return (<div>{data}</div>)
+}
+
+const App = () => {
+    <>
+        <Suspense fallback={<p>loading...</p>}>
+        	<Child />
+        </Suspense>
+    </>
+}
+```
+
+## Next.js Async Component
+
+在next.js中可以在组件内部使用async/await 来等待数据加载
+
+```jsx
+// page.js
+async function getPosts() {
+  const posts = await prisma.post.findMany();
+  return posts;
+}
+ 
+export default async function Page() {
+  const posts = await getPosts();
+  // ...
+}
+
+// layout.js
+export default function Layout({children}) {
+    return (
+    	<>
+        	<Suspense fallback={<p>loading...</p>}>
+        		{children} next.js 通过chidren来把page传给layout
+        	</Suspense>
+        </>
+    )
+}
+```
+
+## Why Suspense
+
+1、路由懒加载
+
+2、对ssr的**流式加载（Streaming）**很有用
+
+目前react18版本中，开发者的一项重点工作就是对RSC（React Server Component）的实现，但是官方文档目前对于RSC的描述为还在实验中。不过在next.js中已经可以很好的使用了。
+
+使用Suspense可以很好的实现Streaming
+
+#### 什么是流式加载？ [Routing: Loading UI and Streaming | Next.js (nextjs.org)](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#what-is-streaming)
+
+要了解流式处理在 React 和 Next.js 中的工作原理，了解**服务器端渲染 （SSR）** 及其限制会很有帮助。
+
+使用 SSR，在用户可以查看页面并与之交互之前，需要完成一系列步骤：
+
+1. 首先，在服务器上获取给定页面的所有数据。
+2. 然后，服务器呈现页面的 HTML。
+3. 页面的 HTML、CSS 和 JavaScript 被发送到客户端。
+4. 使用生成的 HTML 和 CSS 显示非交互式用户界面。
+5. 最后，反应[水合物](https://react.dev/reference/react-dom/client/hydrateRoot#hydrating-server-rendered-html)使其具有交互性的用户界面。
+
+![Chart showing Server Rendering without Streaming](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-without-streaming-chart.png&w=3840&q=75)
+
+这些步骤是顺序和阻塞的，这意味着服务器只能在获取所有数据后呈现页面的 HTML。而且，在客户端上，React 只有在下载了页面中所有组件的代码后才能对 UI 进行水合。
+
+带有 React 和 Next 的 SSR.js通过尽快向用户显示非交互式页面来帮助提高感知的加载性能。
+
+![Server Rendering without Streaming](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-without-streaming.png&w=3840&q=75)
+
+但是，它仍然可能很慢，因为服务器上的所有数据获取都需要在向用户显示页面之前完成。
+
+**流式处理**允许您将页面的 HTML 分解为较小的块，并逐步将这些块从服务器发送到客户端。
+
+![How Server Rendering with Streaming Works](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-with-streaming.png&w=3840&q=75)
+
+这样可以更快地显示页面的某些部分，而无需等待加载所有数据后才能呈现任何 UI。
+
+![Chart showing Server Rendering with Streaming](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Fserver-rendering-with-streaming-chart.png&w=3840&q=75)
+
+流式处理可以很有效的建设首屏渲染时间

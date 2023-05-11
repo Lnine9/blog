@@ -4,6 +4,12 @@ import { BiMailSend } from "react-icons/bi";
 import { BsTencentQq, BsGithub } from "react-icons/bs";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 import { motion, MotionConfig, useAnimationControls } from "framer-motion";
+import {
+  TbBrandNextjs,
+  TbBrandTailwind,
+  TbBrandThreejs,
+  TbBrandFramer,
+} from "react-icons/tb";
 
 const Footer = () => {
   const ctrl = useAnimationControls();
@@ -26,7 +32,10 @@ const Footer = () => {
 
   return (
     <footer className="w-full bg-neutral-800">
-      <div className="max-w-screen-xl m-auto min-h-[80vh] text-neutral-200 grid grid-cols-none grid-rows-2 md:grid-rows-none md:grid-cols-2 py-24 px-12">
+      <div
+        className="max-w-screen-xl m-auto min-h-[75vh] text-neutral-200
+      grid grid-cols-none grid-rows-2 md:grid-rows-none md:grid-cols-2 py-8 px-12"
+      >
         <div className="flex justify-center md:justify-start items-end">
           <MotionConfig transition={{ type: "spring", stiffness: 200 }}>
             <motion.button
@@ -49,7 +58,10 @@ const Footer = () => {
           </MotionConfig>
         </div>
         <div className="flex flex-col justify-between">
-          <div className="text-neutral-200 text-2xl md:text-3xl leading-[3rem] mt-12">
+          <div
+            className="text-neutral-200 text-2xl md:text-3xl mt-24"
+            style={{ lineHeight: "3rem" }}
+          >
             没什么东西可以展示的了，但是这里有一个 super cool 的按钮！
             <br />
             点一下就可以回到网页顶部捏。
@@ -67,6 +79,13 @@ const Footer = () => {
             </p>
           </div>
         </div>
+      </div>
+      <div className="flex justify-center items-center text-neutral-200 py-3 bg-neutral-700">
+        created by Lnine9 with&nbsp;&nbsp;
+        <TbBrandNextjs /> next.js |&nbsp;
+        <TbBrandTailwind /> tailwindcss |&nbsp;
+        <TbBrandThreejs /> react-three-fiber |&nbsp;
+        <TbBrandFramer /> framer-motion ...
       </div>
     </footer>
   );
