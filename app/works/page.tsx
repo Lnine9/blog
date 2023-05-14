@@ -10,32 +10,34 @@ const Item = (props: Item) => (
     className="
     flex
     flex-col
-    sm:flex-row
+    md:flex-row
     gap-4
-    w-full
-    py-8
-    sm:items-center
-    border
-    shadow-xl shadow-neutral-100
+    md:w-3/4
+    items-center
+    shadow-2xl
+    shadow-neutral-300
     bg-white
-    hover:bg-neutral-700
+    hover:bg-neutral-800
     hover:text-white
-    rounded-2xl
     transition-colors ease-in-out
+    p-4
+    md:p-0
+    rounded-lg
+    md:rounded-none
     "
   >
     <Image
       src={props.img || ReactIcon}
-      width={240}
-      height={130}
+      width={380}
+      height={220}
       alt={props.title}
       className="
-      mx-8
-      bg-white
-      rounded-xl
+      bg-neutral-700
       "
+      style={{ objectFit: "cover", height: "220px" }}
+      quality={90}
     />
-    <div className="flex-1 mx-8">
+    <div className="flex-1 mx-8 py-4 max-w-[380px] md:max-w-auto">
       <h2 className="text-2xl whitespace-pre-wrap mb-2">{props.title}</h2>
       <p className="text-neutral-500 whitespace-pre-wrap">
         {props.description}
@@ -46,7 +48,7 @@ const Item = (props: Item) => (
 
 const Page = () => {
   return (
-    <div className="w-3/4 mx-auto my-8 flex flex-col gap-6">
+    <div className="w-full px-8 my-8 flex flex-col items-center gap-10 pb-20">
       {DOCS.map((item) => (
         <Item {...item} key={item.path} />
       ))}
