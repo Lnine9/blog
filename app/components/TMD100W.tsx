@@ -61,7 +61,7 @@ const TMD100W = () => {
         <div>破</div>
         <div>拳</div>
         <div>啊</div>
-        <div>!!!</div>
+        <div>!!</div>
       </motion.div>
     </>
   );

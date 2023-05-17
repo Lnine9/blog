@@ -100,9 +100,10 @@ const Item = ({
 }: Experience & { onHover: (title) => void }) => {
   return (
     <div
-      className="w-full h-20 md:h-28 border-b border-black z-40
-      cursor-pointer flex justify-between items-center relative
-      hover:text-neutral-800 hover:h-36 transition-all duration-300 ease-in-out"
+      className="group w-full h-20 md:h-28 border-b border-black z-40
+      cursor-grab flex justify-between items-center relative
+      hover:text-neutral-800 hover:h-36 transition-all duration-300 ease-in-out
+      "
       onMouseOver={() => {
         onHover(title);
       }}
@@ -112,7 +113,7 @@ const Item = ({
     >
       <div>
         <p className="text-2xl md:text-4xl mb-6">{title}</p>
-        <p className="absolute bottom-2 md:text-lg text-neutral-500 truncate w-[calc(100%-8rem)]">
+        <p className="group-hover:bg-neutral-100 group-hover:bg-opacity-50 group-hover:text-neutral-700 absolute bottom-2 md:text-lg text-neutral-500 truncate w-[calc(100%-8rem)]">
           {desc}
         </p>
       </div>
@@ -140,12 +141,13 @@ const MotionImg = ({
   // }, [src]);
 
   return (
-    <motion.img
-      ref={ref}
+    <motion.div
+      id="img-cur"
+      className="absolute z-[5]"
       animate={
         imgShow
           ? {
-              opacity: 0.9,
+              opacity: 0.8,
               scale: 1,
               transition: { duration: 0.5 },
             }
@@ -159,13 +161,9 @@ const MotionImg = ({
         x: x,
         y: y,
       }}
-      id="img-cur"
-      className="absolute z-[5]"
-      width={360}
-      height={270}
-      src={src}
-      alt=""
-    />
+    >
+      <Image ref={ref} width={360} height={270} src={src} alt="" />
+    </motion.div>
   );
 };
 

@@ -2,7 +2,6 @@
 import React from "react";
 import { BiMailSend } from "react-icons/bi";
 import { BsGithub } from "react-icons/bs";
-import { motion } from "framer-motion";
 import {
   TbBrandNextjs,
   TbBrandTailwind,
