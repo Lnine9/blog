@@ -1,0 +1,108 @@
+---
+title: next.js中使用Bundle Analyzer
+description: 在next.js中使用Webpack Bundle Analyzer
+tags: next.js
+date: 2023/4/2
+---
+
+## 什么是 bundle-analyzer
+
+在 webpack 中，bundle-analyzer 是个很好用的插件，它可以帮我们分析打包后的代码，包括代码拆分情况、包大小、以及静态资源大小等。
+可以很直观的查找出那些代码占用体积过大，哪些库引用了多余的内容等。
+
+## 安装@next/bundle-analyzer
+
+在 next.js 项目中，可以使用@next/bundle-analyzer，专门为 next 设计的分析工具
+首先，需要使用 npm/yarn 安装相关包
+
+```text
+# npm
+npm install --save-dev @next/bundle-analyzer cross-env
+# Yarn
+yarn add -D @next/bundle-analyzer cross-env
+```
+
+(注：cross-env 使我们可以使用单个命令，而不必担心为平台设置全局环境变量)
+
+## 配置 next.config
+
+安装包后，可以通过将以下代码添加到文件中来启用捆绑分析器：next.config.js
+
+```js
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+module.exports =
+  withBundleAnalyzer();
+  // 你的其他配置
+```
+
+如果你有多个插件的话可以考虑以下配置：
+
+```js
+// 1、嵌套使用
+module.exports = withPlugin1(withPlugin2(your_config));
+// 2、通过第三方库next-compose-plugins
+// yarn add -D next-compose-plugins
+const withPlugins = require("next-compose-plugins");
+
+module.exports = withPlugins([withPlugin1, withPlugin2], your_config);
+```
+
+## 运行 bundle-analyzer
+
+在 package.json 的 scripts 中添加下面命令
+
+```text
+"analyze": "cross-env ANALYZE=true next build"
+```
+
+执行**npm run analyze**
+等待打包完成后，在打包后的.next 文件夹下的 analyze 中会有 3 个 html 文件，分别对应不同环境下的打包代码
+
+### client.html: 客户端的代码包
+
+![](https://cdn.lnine9.icu/images/bundle_analyze/1684238069816.png?imageView2/0/interlace/1/q/50|imageslim)
+
+### nodejs.html: 服务端的代码包
+
+![](https://cdn.lnine9.icu/images/bundle_analyze/1684238126496.png?imageView2/0/interlace/1/q/50|imageslim)
+
+### edge.html: Edge Runtime 下的代码包
+
+Edge Runtime 是 vercel 提供的一个运行环境，可以在其上运行 Edge Function，Edge Function 类似与 CDN，它可以把业务逻辑代码
+放到距离用户最近的服务器上。运行效率高，但是可使用 api 有限制，例如：
+
+- 原生 nodejs 的 api 不可以调用，例如不能读取文件.
+- node_modules 可以使用, 但要使用 ES Modules 且没用到原生的 nodejs api.
+- 不能使用 require().
+
+以及以下的 JavaScript api
+
+| API            | 描述                         |
+| -------------- | ---------------------------- |
+| eval           | 将一段字符串当成 js 代码运行 |
+| new Function() | 使用参数和方法体创建一个函数 |
+|                |                              |
+
+> 详情文档：https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes#edge-runtime
+
+当代码中没使用到 edge runtime 时 edge.html 为空，我们可以为单个路由文件标识其运行环境：
+
+```ts
+// app/post/[slug]/page.ts 将我的post路由标记为edge运行时环境
+export const runtime = "edge"; // 'nodejs' (default) | 'edge'
+```
+
+打包结果如下
+![](https://cdn.lnine9.icu/images/bundle_analyze/1684239278896.png?imageView2/0/interlace/1/q/50|imageslim)
+但由于我在这个页面中使用了 nodejs 的 fs 来读取文件，因此打包报错
+
+```text
+Failed to compile.
+
+./node_modules/gray-matter/lib/utils.js:36:37
+Module not found: Can't resolve 'buffer'
+
+https://nextjs.org/docs/messages/module-not-found
+```

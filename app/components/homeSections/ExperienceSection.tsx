@@ -112,7 +112,9 @@ const Item = ({
     >
       <div>
         <p className="text-2xl md:text-4xl mb-6">{title}</p>
-        <p className="absolute bottom-2 md:text-lg">{desc}</p>
+        <p className="absolute bottom-2 md:text-lg text-neutral-500 truncate w-[calc(100%-8rem)]">
+          {desc}
+        </p>
       </div>
       <p className="absolute right-4 bottom-2 md:text-xl text-neutral-500">
         {date}

@@ -1,0 +1,165 @@
+---
+title : TypeScript常用类型
+description : TypeScript常用类型
+tags : ts
+date : 2023/4/6
+---
+## Partial
+将类型中所有属性变成可选的
+```ts
+/**
+ * Make all properties in T optional
+ */
+type Partial<T> = {
+    [P in keyof T]?: T[P];
+};
+```
+Partial只能作用到第一层，如果要嵌套使用可以用下面的自定义类型
+```ts
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : T[P] extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : DeepPartial<T[P]>;
+};
+```
+
+### infer关键字
+**infer**可以在**extends**的条件语句中推断待推断的类型
+
+```ts
+type Func = (name: string, age: number) => number;
+
+// ts的一个内置类型，用来推断函数返回值类型
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+
+type funcReturnType = ReturnType<Func>; // 类型为 number
+
+// ts的一个内置类型，用于推断函数的参数类型
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
+
+type funcParameters = Parameters<Func>;// 类型为 [name: string, age: number]
+```
+
+## Required
+将类型中的所有属性变为必填
+```ts
+/**
+ * Make all properties in T required
+ */
+type Required<T> = {
+    [P in keyof T]-?: T[P];
+};
+```
+## Readonly
+将类型中的所有属性变为只读
+```ts
+/**
+ * Make all properties in T readonly
+ */
+type Readonly<T> = {
+    readonly [P in keyof T]: T[P];
+};
+```
+
+## Record
+创建一个全部属性具有相同类型的类型
+```ts
+/**
+ * Construct a type with a set of properties K of type T
+ */
+type Record<K extends keyof any, T> = {
+    [P in K]: T;
+};
+
+const pig: Record<string, string> = {name: '🐷', address: 'where'}
+```
+
+## Exclude
+如果T能够兼容U则返回never，否则返回T。一般用于从一个联合类型中剔除一些不需要的类型
+```ts
+/**
+ * Exclude from T those types that are assignable to U
+ */
+type Exclude<T, U> = T extends U ? never : T;
+
+type UnionType = "name" | "age" | "size";
+
+const some: Exclude<UnionType, "age" | "size"> = "name";
+```
+
+## Extract
+与Exclude相反。
+```ts
+/**
+ * Extract from T those types that are assignable to U
+ */
+type Extract<T, U> = T extends U ? T : never;
+```
+
+## Omit
+一般用于从一个类型中剔除不需要的属性
+```ts
+/**
+ * Construct a type with the properties of T except for those in type K.
+ */
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+
+type Pig = {name: string, size: number}
+
+const pig: Omit<Pig, 'size'> = {name: '🐷'}
+```
+
+## Pick
+从类型中选出部分属性，来返回新的属性
+```ts
+/**
+ * From T, pick a set of properties whose keys are in the union K
+ */
+type Pick<T, K extends keyof T> = {
+    [P in K]: T[P];
+};
+
+type Pig = {name: string, size: number}
+
+const pig: Pick<Pig, 'name'> = {name: '🐷'}
+```
+
+## NonNullable
+```ts
+/**
+ * Exclude null and undefined from T
+ */
+type NonNullable<T> = T & {};
+
+type myType = string | number | null | undefined
+
+type noNullType = NonNullable<myType>
+```
+
+## 字母大小写相关
+```ts
+
+/**
+ * 全部字母大写
+ */
+type Uppercase<S extends string> = intrinsic;
+/**
+ * 全部字母小写
+ */
+type Lowercase<S extends string> = intrinsic;
+/**
+ * 首字母大写
+ */
+type Capitalize<S extends string> = intrinsic;
+/**
+ * 首字母小写
+ */
+type Uncapitalize<S extends string> = intrinsic;
+
+// 举例
+type Types = 'name'|'size'
+
+type UpperTypes = Uppercase<Types>;// 'NAME'|'SIZE'
+```
