@@ -1,0 +1,70 @@
+---
+title: 拥抱Zustand，新时代的状态管理
+description: 拥抱Zustand，新时代的状态管理
+tags: zustand|react
+date: 2023/5/20
+---
+Zustand是由React社区著名开发者Daishi Kato（“大师”）构建的状态管理解决方案,由pmndrs团队管理
+pmndrs是笔者非常崇拜一个开源组织，不只是zustand，他们管理着react-three-fiber，react-spring
+等优秀react库，是个很有创造力的团队。（官方网站：http://pmnd.rs）
+
+Zustand采用hooks的形式来管理状态，简单、高效，对react开发者非常友好。
+相比较于redux，zustand有以下优点：
+- 书写简单、没有繁杂的样板代码
+- 无需Context Provider，使得结构组织更灵活
+- hooks写法能够更快速地对之前的代码添加状态管理
+- 可以使用await/async很方便地处理异步
+
+## 安装
+```text
+# NPM
+npm install zustand
+
+# Yarn
+yarn add zustand
+```
+
+## 创建store
+```js
+// bearStore.js
+import { create } from 'zustand'
+
+// create方法提供了set get函数用于更新与获取状态
+const useStore = create((set) => ({
+  bears: 0,
+  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+  // 异步逻辑
+  fetchBears: async (params) => {
+    const response = await fetch(params)
+    set({ bears: await response.data })
+  },
+}))
+
+```
+
+## 组件内使用
+```jsx
+function BearCounter() {
+  const bears = useStore((state) => state.bears)
+  return <h1>{bears} around here...</h1>
+}
+
+function Controls() {
+  const increasePopulation = useStore((state) => state.increasePopulation)
+  return <button onClick={increasePopulation}>one up</button>
+}
+```
+
+## 持久化
+```js
+import {persist} from "zustand/middleware"
+
+let store = () => ({
+  ...
+});
+
+store = persist(store, {name: "bears"})
+
+const useStore = create(store);
+```

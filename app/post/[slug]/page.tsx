@@ -69,7 +69,7 @@ const PostPage = async ({ params }: any) => {
         <h1>{post.data.title}</h1>
         <div className="text-neutral-500 flex gap-4 mb-4">
           <div>date: {post.data.date}</div>
-          <Tags tags={post.data.tags} />
+          {/*<Tags tags={post.data.tags} />*/}
         </div>
 
         {post.source.content}
