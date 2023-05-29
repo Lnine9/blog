@@ -22,7 +22,7 @@ export default async function RootLayout({
 }) {
   return (
     <html>
-      <body className={font.className}>
+      <body className={`${font.className} md:min-w-[1100px]`}>
         <div className="bak hidden md:block" />
         <Navbar />
         <div className="w-full flex flex-col justify-center">

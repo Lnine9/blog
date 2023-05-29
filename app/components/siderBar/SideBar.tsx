@@ -2,6 +2,7 @@
 import React, { useCallback } from "react";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { MenuPath } from "@/app/consts/menu";
+import Link from "next/link";
 
 interface MenuItemProps {
   onClick: () => void;
@@ -15,12 +16,14 @@ const MenuItem: React.FC<MenuItemProps> = ({
   active = false,
 }) => {
   return (
-    <div
-      onClick={onClick}
-      className={`
+    <>
+      <div
+        onClick={onClick}
+        className={`
         px-5
         py-2
         my-1
+        min-h-[3.5rem]
         text-neutral-700
         hover:bg-neutral-200
         transition-colors
@@ -28,13 +31,16 @@ const MenuItem: React.FC<MenuItemProps> = ({
         rounded-lg
         duration-300
         cursor-pointer
-        truncate
+        flex
+        items-center
         ${active ? "bg-neutral-200" : ""}
+        ${active ? "font-bold" : ""}
       `}
-      title={label}
-    >
-      {label}
-    </div>
+        title={label}
+      >
+        {label}
+      </div>
+    </>
   );
 };
 
@@ -60,22 +66,26 @@ const SideBar = ({ paths }: SideBarProps) => {
       hidden
       md:flex
       flex-col
-      w-60
-      px-4
+      w-64
+      min-w-[16rem]
+      pl-4
+      pr-1
       py-4
       top-[calc(theme(height.navh))]
       h-[calc(100vh-theme(height.navh))]
+      overflow-y-scroll
       sticky
       bg-white
       z-10
       "
     >
-      <div
+      <Link
         className="bg-neutral-900 text-white text-xl
-      flex justify-center rounded-lg w-full mx-auto mb-4 py-2"
+      flex justify-center rounded-lg w-full mx-auto mb-4 py-3"
+        href={"/post"}
       >
-        POSTS
-      </div>
+        POST
+      </Link>
       {paths.map((item) => (
         <MenuItem
           key={item.slug}

@@ -64,7 +64,7 @@ const PostPage = async ({ params }: any) => {
   }
 
   return (
-    <div className="px-2 md:px-16 py-8 w-full bg-white min-h-[calc(100vh-theme(height.navh))]">
+    <div className="px-2 lg:px-16 py-8 w-full overflow-x-hidden bg-white min-h-[calc(100vh-theme(height.navh))]">
       <article className="prose p-4">
         <h1>{post.data.title}</h1>
         <div className="text-neutral-500 flex gap-4 mb-4">
