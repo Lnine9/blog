@@ -26,7 +26,7 @@ const Item = (props: Item) => (
     md:rounded-none
     "
   >
-    <Image
+    <img
       src={props.img || ReactIcon}
       width={380}
       height={220}
@@ -35,7 +35,6 @@ const Item = (props: Item) => (
       bg-neutral-700
       "
       style={{ objectFit: "cover", height: "220px" }}
-      quality={90}
     />
     <div className="flex-1 mx-8 py-4 max-w-[380px] md:max-w-auto">
       <h2 className="text-2xl whitespace-pre-wrap mb-2">{props.title}</h2>

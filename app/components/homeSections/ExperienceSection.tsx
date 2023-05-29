@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SectionWrapper from "@/app/components/hocs/SectionWrapper";
 import SectionTitle from "@/app/components/homeSections/SectionTitle";
 import { BsFilm } from "react-icons/bs";
@@ -7,25 +7,15 @@ import {
   Experience,
   experiences,
 } from "@/app/components/homeSections/experiences";
-import {
-  animate,
-  motion,
-  MotionValue,
-  transform,
-  useMotionValue,
-  useTransform,
-} from "framer-motion";
+import { motion, MotionValue, transform, useMotionValue } from "framer-motion";
 import useMeasure from "react-use-measure";
-import { throttle } from "@/libs/func";
-import Image from "next/image";
-import useAsyncEffect from "@/app/hooks/utils";
 import { staggerContainer } from "@/libs/motions";
 
 const ExperienceSection = () => {
   const [hoverImg, setHoverImg] = useState<string>("");
   const [imgShow, setImgShow] = useState<boolean>(false);
   const onHover = (title: string) => {
-    setHoverImg(experiences.find((t) => t.title === title)?.img || "");
+    setHoverImg(title);
   };
   const [ref, bounds] = useMeasure();
   const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -46,14 +36,14 @@ const ExperienceSection = () => {
     )(mouse.current.x);
     mouse.current.y = transform(
       [0, bounds.height],
-      [135, bounds.height - 135]
+      [100, bounds.height - 100]
     )(mouse.current.y);
   };
 
   useEffect(() => {
     const timer = setInterval(() => {
       let targetX = mouse.current.x - 180;
-      let targetY = mouse.current.y - 135;
+      let targetY = mouse.current.y - 100;
       const nextX = X.get() + (targetX - X.get()) * 0.05;
       const nextY = Y.get() + (targetY - Y.get()) * 0.05;
       X.set(nextX);
@@ -86,7 +76,7 @@ const ExperienceSection = () => {
             <Item key={item.title} {...item} onHover={onHover} />
           ))}
         </motion.div>
-        <MotionImg src={hoverImg} imgShow={imgShow} x={X} y={Y} />
+        <MotionImg title={hoverImg} imgShow={imgShow} x={X} y={Y} />
       </div>
     </div>
   );
@@ -125,12 +115,12 @@ const Item = ({
 };
 
 const MotionImg = ({
-  src,
+  title,
   imgShow,
   x,
   y,
 }: {
-  src: string;
+  title: string;
   imgShow: boolean;
   x: MotionValue<number>;
   y: MotionValue<number>;
@@ -143,7 +133,7 @@ const MotionImg = ({
   return (
     <motion.div
       id="img-cur"
-      className="absolute z-[5]"
+      className="absolute z-[5] w-[360px]"
       animate={
         imgShow
           ? {
@@ -162,7 +152,21 @@ const MotionImg = ({
         y: y,
       }}
     >
-      <Image ref={ref} width={360} height={270} src={src} alt="" />
+      {experiences.map((item) => (
+        <img
+          key={item.title}
+          style={{
+            visibility: item.title === title ? "visible" : "hidden",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+          }}
+          ref={ref}
+          width={360}
+          src={item.img}
+          alt=""
+        />
+      ))}
     </motion.div>
   );
 };
